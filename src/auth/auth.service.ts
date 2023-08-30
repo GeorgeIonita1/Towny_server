@@ -1,21 +1,24 @@
-import { Injectable } from '@nestjs/common';
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { Injectable, UnauthorizedException  } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 
-import { auth } from 'firebase-config';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AuthService {
-    getTitle(): string {
-        createUserWithEmailAndPassword(auth, 'gddd3orrg301@gmail.com', 'Ienupar3')
-            .then(userCredential => {
-                const user = userCredential.user;
-                console.log(user)
-            })
-            .catch(error => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-            })
-        
-        return 'auth route';
+    constructor(
+        private userService: UsersService,
+        private jwtService: JwtService
+    ) {}
+
+    async signIn(username: string, pass: string): Promise<any> {
+        const user = await this.userService.findOne(username);
+
+        if (user?.password !== pass) throw new UnauthorizedException();
+
+        const payload = { sub: user.userId, username: user.username };
+
+        return {
+            acces_token: await this.jwtService.signAsync(payload),
+        }
     }
 }
