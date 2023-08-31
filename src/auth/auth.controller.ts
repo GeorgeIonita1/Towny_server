@@ -18,4 +18,9 @@ export class AuthController {
     getProfile(@Request() req) {
         return req.user;
     }
+
+    @Post('token')
+    getToken(@Body() token) {
+        return this.authService.signAuthToken(token.username, token.userId);
+    }
 }

@@ -10,12 +10,13 @@ export class UsersService {
           userId: 1,
           username: 'john',
           password: 'changeme',
-          agbdlcid: 123
+          email: 123
         },
         {
           userId: 2,
           username: 'maria',
           password: 'guess',
+          email: 34456
         },
       ];
     
