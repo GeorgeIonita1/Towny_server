@@ -13,10 +13,21 @@ export class AuthService {
     ) {}
 
     async signIn(username: string, pass: string): Promise<any> {
-        
-    }
+        console.log(username, pass)
+        const user = await this.userService.findOne(username);
+        console.log(user)
 
-    
+        if (user?.password !== pass) {
+          throw new UnauthorizedException();
+        }
+
+        const payload = { sub: user.userId, username: user.username };
+        console.log(payload)
+
+        // return {
+        //   access_token: await this.jwtService.signAsync(payload),
+        // }
+    }
 
     async signAuthToken(username, userId) {
         const payload = {
@@ -27,7 +38,7 @@ export class AuthService {
         const authToken = await this.jwtService.signAsync(
             payload,
             {
-                expiresIn: '120s',
+                expiresIn: '180s',
                 secret: this.configService.get('JWT_SECRET'),
             }
         );
