@@ -27,7 +27,7 @@ export class UsersService {
     return this.users.find(user => user.username === username);
   }
 
-  createUser() {
-    this.firebaseApp.getAllUsers();
+  createUser(userDetails) {
+    return this.firebaseApp.createUser(userDetails);
   }
 }
