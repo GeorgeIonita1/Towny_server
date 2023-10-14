@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { FirebaseService } from 'src/firebase/firebase.service';
 
 // This should be a real class/interface representing a user entity
 export type User = any;
@@ -20,7 +21,13 @@ export class UsersService {
     },
   ];
 
+  constructor(private firebaseApp: FirebaseService) {}
+
   async findOne(username: string): Promise<User | undefined> {
     return this.users.find(user => user.username === username);
+  }
+
+  createUser() {
+    this.firebaseApp.getAllUsers();
   }
 }
