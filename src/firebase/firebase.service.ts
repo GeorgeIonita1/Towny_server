@@ -1,4 +1,5 @@
 import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { UserExistsException } from 'src/api_http_exceptions/ApiHttpExceptions';
 const { initializeApp, cert } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
 const serviceAccount = require('../../firebaseKey.json');
@@ -30,29 +31,10 @@ export class FirebaseService {
         const collectionRef = this.db.collection('users');
         const userRef = await collectionRef.where('email', '==', email).get();
 
-        // if (!userRef.empty) {
-        //     console.log('Exista deja un user');
-        //     throw new HttpException({
-        //         status: HttpStatus.UNAUTHORIZED,
-        //         error: 'Custom error'
-        //     }, HttpStatus.UNAUTHORIZED), {
-        //         cause: 'georgeseroare'
-        //     }
-        // }
-
-        try {
-            console.log('try block');
-            throw new Error('na belea');
-        } catch (error) {
-            throw new HttpException({
-                status: HttpStatus.UNAUTHORIZED,
-                error: 'This is custom error'
-            }, HttpStatus.UNAUTHORIZED, {
-                cause: error
-            })
+        if (!userRef.empty) {
+            console.log('Exista deja un user');
+            throw new UserExistsException();
         }
-
-
 
         // console.log(userRef.docs[0].data());
         // return true;
