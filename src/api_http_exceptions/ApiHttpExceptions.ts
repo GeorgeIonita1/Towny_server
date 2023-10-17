@@ -27,7 +27,7 @@ export class UserExistsException extends ApiHttpException {
             type: 'forbidden',
             message: 'User already exists',
             solution: 'Please go to login page'
-        }, HttpStatus.UNAUTHORIZED
+        }, HttpStatus.FORBIDDEN
       );
     }
 }

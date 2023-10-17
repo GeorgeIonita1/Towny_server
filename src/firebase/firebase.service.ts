@@ -46,6 +46,6 @@ export class FirebaseService {
             role: 'user'
         });
         
-        return { id: res.id };
+        return { type: 'Success', message: 'Account created', solution: 'Please login' };
     }
 }
