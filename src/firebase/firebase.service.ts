@@ -1,18 +1,24 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { UserExistsException } from 'src/api_http_exceptions/ApiHttpExceptions';
+import { Injectable } from '@nestjs/common';
 const { initializeApp, cert } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
-const serviceAccount = require('../../firebaseKey.json');
 
-initializeApp({
-  credential: cert(serviceAccount)
-});
+const serviceAccount = require('../../firebaseKey.json');
+import { UserExistsException } from 'src/api_http_exceptions/ApiHttpExceptions';
+
 
 
 
 @Injectable()
 export class FirebaseService {
-    private readonly db = getFirestore();
+    private readonly db;
+    
+    constructor() {
+        initializeApp({
+          credential: cert(serviceAccount)
+        });
+
+        this.db = getFirestore();
+    }
 
     async getAllUsers() {
         console.log("getting all users");
@@ -25,9 +31,7 @@ export class FirebaseService {
     }
 
     async createUser(userDetails) {
-        const { email } = userDetails;
-        console.log('checking if user exists');
-        console.log(userDetails)
+        const { email, password } = userDetails;
         const collectionRef = this.db.collection('users');
         const userRef = await collectionRef.where('email', '==', email).get();
 
@@ -36,7 +40,12 @@ export class FirebaseService {
             throw new UserExistsException();
         }
 
-        // console.log(userRef.docs[0].data());
-        // return true;
+        const res = await collectionRef.add({
+            email,
+            password,
+            role: 'user'
+        });
+        
+        return { id: res.id };
     }
 }
