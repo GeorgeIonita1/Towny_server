@@ -3,17 +3,36 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
 import { UsersService } from '../users/users.service';
+import { FirebaseService } from 'src/firebase/firebase.service';
+import { UserDoesNotExistException } from 'src/api_http_exceptions/ApiHttpExceptions';
 
 @Injectable()
 export class AuthService {
     constructor(
         private userService: UsersService,
         private jwtService: JwtService,
-        private configService: ConfigService
+        private configService: ConfigService,
+        private db: FirebaseService
     ) {}
 
-    async signIn(username: string, pass: string): Promise<any> {
-        console.log(username, pass)
+    async isValidUserPassword(email: string, password: string) {
+        const user = await this.db.getUserByEmail(email);
+        console.log('inainte')
+        if (user === null) throw new UserDoesNotExistException();
+        console.log('dupa')
+
+        return user.password === password;
+    }
+
+    async signIn(email: string, password: string): Promise<any> {
+        console.log(email, password)
+        const passwordIsValid = this.isValidUserPassword(email, password);
+
+
+
+
+
+
         // const user = await this.userService.findOne(username);
         // console.log(user)
 

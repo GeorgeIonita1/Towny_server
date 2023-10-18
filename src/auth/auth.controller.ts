@@ -1,15 +1,18 @@
-import {  Body, Controller, Post, HttpCode, HttpStatus, Get, Request, UseGuards } from '@nestjs/common';
+import {  Body, Controller, Post, HttpCode, HttpStatus, UseFilters, Get, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 
 import { AuthGuard } from './auth.guard';
+import { SignInDto } from './dto/auth.dto';
+import { HttpExceptionFilter } from 'src/exception_filters/default_exception.filter';
 
 @Controller('auth')
 export class AuthController {
     constructor(private authService: AuthService) {}
     
-    @HttpCode(HttpStatus.OK)
+    // @HttpCode(HttpStatus.OK)
+    @UseFilters(HttpExceptionFilter)
     @Post('signin')
-    signIn(@Body() signInDto: Record<string, any>) {
+    signIn(@Body() signInDto: SignInDto) {
         console.log(signInDto)
         return this.authService.signIn(signInDto.email, signInDto.password);
     }

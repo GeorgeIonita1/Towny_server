@@ -3,10 +3,7 @@ const { initializeApp, cert } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
 
 const serviceAccount = require('../../firebaseKey.json');
-import { UserExistsException } from 'src/api_http_exceptions/ApiHttpExceptions';
-
-
-
+import { UserAlreadyExistsException } from 'src/api_http_exceptions/ApiHttpExceptions';
 
 @Injectable()
 export class FirebaseService {
@@ -18,6 +15,15 @@ export class FirebaseService {
         });
 
         this.db = getFirestore();
+    }
+
+    async getUserByEmail(email: string) {
+        const collectionRef = this.db.collection('users');
+        const userRef = await collectionRef.where('email', '==', email).get();
+
+        if (userRef.empty) return null;
+
+        return userRef.docs[0].data();
     }
 
     async getAllUsers() {
@@ -37,7 +43,7 @@ export class FirebaseService {
 
         if (!userRef.empty) {
             console.log('Exista deja un user');
-            throw new UserExistsException();
+            throw new UserAlreadyExistsException();
         }
 
         const res = await collectionRef.add({

@@ -20,7 +20,7 @@ export class ApiHttpException extends HttpException {
     }
 }
 
-export class UserExistsException extends ApiHttpException {
+export class UserAlreadyExistsException extends ApiHttpException {
     constructor() {
       super(
         {
@@ -30,4 +30,14 @@ export class UserExistsException extends ApiHttpException {
         }, HttpStatus.FORBIDDEN
       );
     }
+}
+
+export class UserDoesNotExistException extends ApiHttpException {
+    constructor() {
+        super({
+            type: 'forbidden',
+            message: 'User does not exist',
+            solution: 'Please go to register page'
+        }, HttpStatus.FORBIDDEN)
+    };
 }
