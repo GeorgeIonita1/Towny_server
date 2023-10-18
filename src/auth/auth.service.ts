@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { UsersService } from '../users/users.service';
 import { FirebaseService } from 'src/firebase/firebase.service';
-import { UserDoesNotExistException } from 'src/api_http_exceptions/ApiHttpExceptions';
+import { UserDoesNotExistException, UserInvalidCredentialsException } from 'src/api_http_exceptions/ApiHttpExceptions';
 
 @Injectable()
 export class AuthService {
@@ -15,42 +15,39 @@ export class AuthService {
         private db: FirebaseService
     ) {}
 
-    async isValidUserPassword(email: string, password: string) {
+    async isValidUserPassword(email: string, password: string, response) {
         const user = await this.db.getUserByEmail(email);
-        console.log('inainte')
-        if (user === null) throw new UserDoesNotExistException();
-        console.log('dupa')
 
-        return user.password === password;
+        try {
+            if (user === null) throw new UserDoesNotExistException();
+            
+            return user.password === password;
+        } catch (error) {
+            response.status(403);
+            response.send(error.response)
+            return false;
+        }
     }
 
-    async signIn(email: string, password: string): Promise<any> {
-        console.log(email, password)
-        const passwordIsValid = this.isValidUserPassword(email, password);
+    async signIn(email: string, password: string, response) {
+        try {
+            const passwordIsValid = await this.isValidUserPassword(email, password, response);
+            console.log(passwordIsValid);
 
+            if (!passwordIsValid) throw new UserInvalidCredentialsException();
 
+            const user = await this.db.getUserByEmail(email);
+            response.send(user)
 
-
-
-
-        // const user = await this.userService.findOne(username);
-        // console.log(user)
-
-        // if (user?.password !== pass) {
-        //   throw new UnauthorizedException();
-        // }
-
-        // const payload = { sub: user.userId, username: user.username };
-        // console.log(payload)
-
-        // // return {
-        // //   access_token: await this.jwtService.signAsync(payload),
-        // // }
+        } catch (error) {
+            response.status(401);
+            response.send(error.response);
+        }
     }
 
-    async signAuthToken(username, userId) {
+    async signAuthToken(username, password) {
         const payload = {
-            sub: userId,
+            sub: password,
             username,
         };
 

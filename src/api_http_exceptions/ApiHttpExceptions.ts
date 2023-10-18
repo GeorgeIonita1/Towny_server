@@ -9,9 +9,9 @@ type TExceptionResponseType =
   | 'invalid_otp_code';
   
   interface IHttpExceptionResponse {
-      type: TExceptionResponseType;
-  message: string;
-  solution: string;
+    type: TExceptionResponseType;
+    message: string;
+    solution: string;
 }
 
 export class ApiHttpException extends HttpException {
@@ -39,5 +39,15 @@ export class UserDoesNotExistException extends ApiHttpException {
             message: 'User does not exist',
             solution: 'Please go to register page'
         }, HttpStatus.FORBIDDEN)
+    };
+}
+
+export class UserInvalidCredentialsException extends ApiHttpException {
+    constructor() {
+        super({
+            type: 'invalid_credentials',
+            message: 'Invalid credentials',
+            solution: 'Please try again or recover your password.'
+        }, HttpStatus.UNAUTHORIZED)
     };
 }

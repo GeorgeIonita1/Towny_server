@@ -13,6 +13,6 @@ import { FirebaseModule } from './firebase/firebase.module';
       isGlobal: true,
     }),
     FirebaseModule
-  ],
+  ]
 })
 export class AppModule {}
