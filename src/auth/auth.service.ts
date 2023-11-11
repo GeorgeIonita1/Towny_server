@@ -1,6 +1,7 @@
 import { Injectable  } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import * as bcrypt from 'bcrypt';
 
 import { FirebaseService } from 'src/firebase/firebase.service';
 import { UserDoesNotExistException, UserInvalidCredentialsException } from 'src/api_http_exceptions/ApiHttpExceptions';
@@ -18,8 +19,10 @@ export class AuthService {
 
         try {
             if (user === null) throw new UserDoesNotExistException();
+
+            const passwordMatches = await bcrypt.compareSync(password, user.encryptedPassword);
             
-            return user.password === password;
+            return passwordMatches;
         } catch (error) {
             response.status(403);
             response.send(error.response)
