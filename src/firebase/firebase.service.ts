@@ -38,19 +38,21 @@ export class FirebaseService {
 
     async createUser(userDetails) {
         const { email, password } = userDetails;
-        const collectionRef = this.db.collection('users');
-        const userRef = await collectionRef.where('email', '==', email).get();
+        const userCollectionRef = this.db.collection('users');
+        const userRef = await userCollectionRef.where('email', '==', email).get();
 
         if (!userRef.empty) {
             console.log('Exista deja un user');
             throw new UserAlreadyExistsException();
         }
 
-        const res = await collectionRef.add({
+        const res = await userCollectionRef.add({
             email,
             password,
             role: 'user'
         });
+
+        await res.update({ id: res.id })
         
         return { type: 'Success', message: 'Account created', solution: 'Please login' };
     }

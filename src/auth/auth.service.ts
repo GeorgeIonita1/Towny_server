@@ -1,15 +1,13 @@
-import { Injectable, UnauthorizedException  } from '@nestjs/common';
+import { Injectable  } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
-import { UsersService } from '../users/users.service';
 import { FirebaseService } from 'src/firebase/firebase.service';
 import { UserDoesNotExistException, UserInvalidCredentialsException } from 'src/api_http_exceptions/ApiHttpExceptions';
 
 @Injectable()
 export class AuthService {
     constructor(
-        private userService: UsersService,
         private jwtService: JwtService,
         private configService: ConfigService,
         private db: FirebaseService
@@ -25,6 +23,7 @@ export class AuthService {
         } catch (error) {
             response.status(403);
             response.send(error.response)
+            
             return false;
         }
     }
@@ -37,7 +36,15 @@ export class AuthService {
             if (!passwordIsValid) throw new UserInvalidCredentialsException();
 
             const user = await this.db.getUserByEmail(email);
-            response.send(user)
+            const signedAuthToken = await this.signAuthToken(user.id, user.email);
+            console.log(signedAuthToken)
+
+            response.cookie("auth-token", signedAuthToken) // to do add expiration date
+            response.send({
+                email: user.email,
+                id: user.id,
+                role: user.role
+            })
 
         } catch (error) {
             response.status(401);
@@ -45,20 +52,13 @@ export class AuthService {
         }
     }
 
-    async signAuthToken(username, password) {
-        const payload = {
-            sub: password,
-            username,
-        };
-
-        const authToken = await this.jwtService.signAsync(
-            payload,
-            {
+    async signAuthToken(id, email) {
+        const payload = { sub: id, email };
+        const authToken = await this.jwtService.signAsync(payload, {
                 expiresIn: '180s',
                 secret: this.configService.get('JWT_SECRET'),
             }
         );
-
-        return { authToken }
+        return authToken;
     }
 }
