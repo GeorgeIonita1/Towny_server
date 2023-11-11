@@ -72,8 +72,34 @@ export class FirebaseService {
             return;
         }
 
-        await userAuthTokenRef.ref.update({ token: signedAuthToken });
+        await userAuthTokenRef.docs[0].ref.update({ token: signedAuthToken });
 
         return;
+    }
+
+    async getUserAuthToken(id) {
+        const usersAuthTokenCollection = this.db.collection('authTokens');
+        const userAuthTokenRef = await usersAuthTokenCollection.where('userId', '==', id).get();
+
+        if (userAuthTokenRef.empty) return null;
+
+        return userAuthTokenRef.docs[0].data().token;
+    }
+
+    async getUserById(userId) {
+        const userCollectionRef = this.db.collection('users');
+        const userRef = await userCollectionRef.where('id', '==', userId).get();
+
+        if (userRef.empty) return null;
+
+        const userData = userRef.docs[0].data();
+
+        const userDataWithoutPassword = {
+            email: userData.email,
+            role: userData.role,
+            id: userData.id
+        }
+
+        return userDataWithoutPassword;
     }
 }

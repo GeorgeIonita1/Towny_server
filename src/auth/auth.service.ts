@@ -43,7 +43,7 @@ export class AuthService {
             const signedAuthToken = await this.signAuthToken(id, email);
             console.log(signedAuthToken)
 
-            response.cookie("auth-token", signedAuthToken) // to do add expiration date
+            response.cookie("auth_token", signedAuthToken) // to do add expiration date
 
             this.db.storeUserAuthToken(id, signedAuthToken);
 
