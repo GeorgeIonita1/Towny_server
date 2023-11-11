@@ -36,8 +36,8 @@ export class FirebaseService {
         })
     }
 
-    async createUser(userDetails) {
-        const { email, password } = userDetails;
+    async createUser(userDetails, encryptedPassword) {
+        const { email } = userDetails;
         const userCollectionRef = this.db.collection('users');
         const userRef = await userCollectionRef.where('email', '==', email).get();
 
@@ -48,11 +48,11 @@ export class FirebaseService {
 
         const res = await userCollectionRef.add({
             email,
-            password,
+            encryptedPassword,
             role: 'user'
         });
 
-        await res.update({ id: res.id })
+        await res.update({ id: res.id });
         
         return { type: 'Success', message: 'Account created', solution: 'Please login' };
     }

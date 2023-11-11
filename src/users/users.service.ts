@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import * as bcrypt from "bcrypt";
+
 import { FirebaseService } from 'src/firebase/firebase.service';
 
 // This should be a real class/interface representing a user entity
@@ -21,13 +23,19 @@ export class UsersService {
     },
   ];
 
-  constructor(private firebaseApp: FirebaseService) {}
+  constructor(private db: FirebaseService) {}
 
   async findOne(username: string): Promise<User | undefined> {
     return this.users.find(user => user.username === username);
   }
 
-  createUser(userDetails) {
-    return this.firebaseApp.createUser(userDetails);
+  async createUser(userDetails) {
+    console.log(userDetails);
+    const encryptedPassword = await bcrypt.hashSync(userDetails.password, 10);
+    console.log(encryptedPassword)
+
+    const createdUsed = this.db.createUser(userDetails, encryptedPassword);
+
+    return createdUsed;
   }
 }
