@@ -31,18 +31,22 @@ export class AuthService {
         }
     }
 
-    async signIn(email: string, password: string, response) {
+    async signIn(userEmail: string, password: string, response) {
         try {
-            const passwordIsValid = await this.isValidUserPassword(email, password, response);
+            const passwordIsValid = await this.isValidUserPassword(userEmail, password, response);
             console.log(passwordIsValid);
 
             if (!passwordIsValid) throw new UserInvalidCredentialsException();
 
-            const user = await this.db.getUserByEmail(email);
-            const signedAuthToken = await this.signAuthToken(user.id, user.email);
+            const user = await this.db.getUserByEmail(userEmail);
+            const { id, email } = user;
+            const signedAuthToken = await this.signAuthToken(id, email);
             console.log(signedAuthToken)
 
             response.cookie("auth-token", signedAuthToken) // to do add expiration date
+
+            this.db.storeUserAuthToken(id, signedAuthToken);
+
             response.send({
                 email: user.email,
                 id: user.id,
@@ -55,7 +59,7 @@ export class AuthService {
         }
     }
 
-    async signAuthToken(id, email) {
+    private async signAuthToken(id, email) {
         const payload = { sub: id, email };
         const authToken = await this.jwtService.signAsync(payload, {
                 expiresIn: '180s',

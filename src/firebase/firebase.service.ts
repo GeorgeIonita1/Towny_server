@@ -56,4 +56,24 @@ export class FirebaseService {
         
         return { type: 'Success', message: 'Account created', solution: 'Please login' };
     }
+
+    async storeUserAuthToken(id, signedAuthToken) {
+        const authTokensCollectionRef = this.db.collection('authTokens');
+        const userAuthTokenRef = await authTokensCollectionRef.where('userId', '==', id).get();
+
+        if (userAuthTokenRef.empty) {
+            const newToken = {
+                userId: id,
+                token: signedAuthToken
+            };
+
+            await this.db.collection('authTokens').add(newToken);
+
+            return;
+        }
+
+        await userAuthTokenRef.ref.update({ token: signedAuthToken });
+
+        return;
+    }
 }
