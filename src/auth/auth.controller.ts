@@ -25,6 +25,6 @@ export class AuthController {
 
     @Get()
     test() {
-        return 'I am groot'
+        return 'I am grootss'
     }
 }
