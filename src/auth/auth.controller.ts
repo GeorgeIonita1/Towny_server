@@ -22,4 +22,9 @@ export class AuthController {
         console.log('refreshing auth');
         console.log(requestWithAuth.user.id)
     }
+
+    @Get()
+    test() {
+        return 'I am groot'
+    }
 }
