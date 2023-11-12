@@ -9,6 +9,6 @@ async function bootstrap() {
     origin: true
   });
   app.use(cookieParser());
-  await app.listen(6677);
+  await app.listen(3000);
 }
 bootstrap();

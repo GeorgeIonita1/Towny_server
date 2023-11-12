@@ -34,7 +34,6 @@ export class FirebaseService {
 
         admin.initializeApp({
             credential: admin.credential.cert(firebaseConfig),
-            // storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
         });
 
         this.db = admin.firestore();
