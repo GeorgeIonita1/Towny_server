@@ -1,20 +1,44 @@
 import { Injectable } from '@nestjs/common';
-const { initializeApp, cert } = require('firebase-admin/app');
-const { getFirestore } = require('firebase-admin/firestore');
+import { ConfigService } from '@nestjs/config';
+const admin = require('firebase-admin');
+// const { initializeApp, cert } = require('firebase-admin/app');
+// const { getFirestore } = require('firebase-admin/firestore');
 
-const serviceAccount = require('../../firebaseKey.json');
+// const serviceAccount = require('../../firebaseKey.json');
 import { UserAlreadyExistsException } from 'src/api_http_exceptions/ApiHttpExceptions';
 
 @Injectable()
 export class FirebaseService {
     private readonly db;
     
-    constructor() {
-        initializeApp({
-          credential: cert(serviceAccount)
+    constructor(private configService: ConfigService) {
+        // initializeApp({
+        //   credential: cert(serviceAccount)
+        // });
+
+        // this.db = getFirestore();
+        // console.log(this.configService.get('GEORGE'))
+        // const cristi = 'cristi';
+        // console.log(cristi)
+        // console.log({
+        //     "project_id": 'projectid',
+        //     cristi,
+        // })
+
+
+        const firebaseConfig = {
+            "project_id": this.configService.get('FIREBASE_PROJECT_ID'),
+            "private_key": this.configService.get('FIREBASE_PRIVATE_KEY'),
+            "client_email": this.configService.get('FIREBASE_CLIENT_EMAIL')
+        }
+
+        admin.initializeApp({
+            credential: admin.credential.cert(firebaseConfig),
+            // storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
         });
 
-        this.db = getFirestore();
+        this.db = admin.firestore();
+
     }
 
     async getUserByEmail(email: string) {
