@@ -27,9 +27,9 @@ export class FirebaseService {
 
 
         const firebaseConfig = {
-            "project_id": this.configService.get('FIREBASE_PROJECT_ID'),
-            "private_key": this.configService.get('FIREBASE_PRIVATE_KEY'),
-            "client_email": this.configService.get('FIREBASE_CLIENT_EMAIL')
+            "project_id": process.env.FIREBASE_PROJECT_ID,
+            "private_key": process.env.FIREBASE_PRIVATE_KEY,
+            "client_email": process.env.FIREBASE_CLIENT_EMAIL
         }
 
         admin.initializeApp({
