@@ -12,32 +12,20 @@ export class FirebaseService {
     private readonly db;
     
     constructor(private configService: ConfigService) {
-        // initializeApp({
-        //   credential: cert(serviceAccount)
-        // });
-
-        // this.db = getFirestore();
-        // console.log(this.configService.get('GEORGE'))
-        // const cristi = 'cristi';
-        // console.log(cristi)
-        // console.log({
-        //     "project_id": 'projectid',
-        //     cristi,
-        // })
-
-
         const firebaseConfig = {
-            "project_id": process.env.FIREBASE_PROJECT_ID,
-            "private_key": process.env.FIREBASE_PRIVATE_KEY ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') : undefined,
-            "client_email": process.env.FIREBASE_CLIENT_EMAIL
+            // "project_id": process.env.FIREBASE_PROJECT_ID,
+            "project_id": this.configService.get('FIREBASE_PROJECT_ID'),
+            // "private_key": process.env.FIREBASE_PRIVATE_KEY ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') : undefined,
+            "private_key": this.configService.get('FIREBASE_PRIVATE_KEY') ? this.configService.get('FIREBASE_PRIVATE_KEY').replace(/\\n/g, '\n') : undefined,
+            // "client_email": process.env.FIREBASE_CLIENT_EMAIL
+            "client_email": this.configService.get('FIREBASE_CLIENT_EMAIL')
         }
 
         admin.initializeApp({
             credential: admin.credential.cert(firebaseConfig),
         });
-
+        
         this.db = admin.firestore();
-
     }
 
     async getUserByEmail(email: string) {
