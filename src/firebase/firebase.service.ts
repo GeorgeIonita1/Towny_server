@@ -1,10 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 const admin = require('firebase-admin');
-// const { initializeApp, cert } = require('firebase-admin/app');
-// const { getFirestore } = require('firebase-admin/firestore');
 
-// const serviceAccount = require('../../firebaseKey.json');
 import { UserAlreadyExistsException } from 'src/api_http_exceptions/ApiHttpExceptions';
 
 @Injectable()
@@ -13,18 +10,15 @@ export class FirebaseService {
     
     constructor(private configService: ConfigService) {
         const firebaseConfig = {
-            // "project_id": process.env.FIREBASE_PROJECT_ID,
             "project_id": this.configService.get('FIREBASE_PROJECT_ID'),
-            // "private_key": process.env.FIREBASE_PRIVATE_KEY ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') : undefined,
             "private_key": this.configService.get('FIREBASE_PRIVATE_KEY') ? this.configService.get('FIREBASE_PRIVATE_KEY').replace(/\\n/g, '\n') : undefined,
-            // "client_email": process.env.FIREBASE_CLIENT_EMAIL
             "client_email": this.configService.get('FIREBASE_CLIENT_EMAIL')
         }
 
         admin.initializeApp({
             credential: admin.credential.cert(firebaseConfig),
         });
-        
+
         this.db = admin.firestore();
     }
 

@@ -51,3 +51,16 @@ export class UserInvalidCredentialsException extends ApiHttpException {
         }, HttpStatus.UNAUTHORIZED)
     };
 }
+
+export class UnauthorizedHttpException extends ApiHttpException {
+    constructor() {
+        super(
+            {
+                type: 'unauthorized',
+                message: 'You are not logged in',
+                solution: 'Please login'
+            },
+            HttpStatus.UNAUTHORIZED
+        );
+    }
+}

@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 
 import { FirebaseService } from 'src/firebase/firebase.service';
-import { UserDoesNotExistException, UserInvalidCredentialsException } from 'src/api_http_exceptions/ApiHttpExceptions';
+import { UnauthorizedHttpException, UserDoesNotExistException, UserInvalidCredentialsException } from 'src/api_http_exceptions/ApiHttpExceptions';
 
 @Injectable()
 export class AuthService {
@@ -42,10 +42,9 @@ export class AuthService {
             const { id, email } = user;
             const signedAuthToken = await this.signAuthToken(id, email);
             console.log(signedAuthToken)
-
-            response.cookie("auth_token", signedAuthToken) // to do add expiration date
-
+            
             this.db.storeUserAuthToken(id, signedAuthToken);
+            response.cookie('auth_token', signedAuthToken) // to do add expiration date
 
             response.send({
                 email: user.email,
@@ -59,11 +58,36 @@ export class AuthService {
         }
     }
 
+    async refreshAuth(userId, response) {
+        try {
+            const user = await this.db.getUserById(userId);
+
+            if (user === null) throw new UnauthorizedHttpException();
+
+            const { id, email } = user;
+            const signedAuthToken = await this.signAuthToken(id, email);
+            console.log('aaaiicii', signedAuthToken);
+            this.db.storeUserAuthToken(id, signedAuthToken);
+            response.cookie('auth_token', signedAuthToken) // to do add expiration date
+
+            response.send({
+                email: user.email,
+                id: user.id,
+                role: user.role
+            })
+
+        } catch (err) {
+            console.log('asta e eroarea',err)
+            response.status(401);
+            response.send(err.response);
+        }
+    }
+
     private async signAuthToken(id, email) {
         const payload = { sub: id, email };
         const authToken = await this.jwtService.signAsync(payload, {
                 expiresIn: '180s',
-                secret: process.env.JWT_SECRET
+                secret: this.configService.get('JWT_SECRET')
             }
         );
         return authToken;
