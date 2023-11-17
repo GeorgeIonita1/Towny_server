@@ -40,9 +40,7 @@ export class AuthService {
             const signedAuthToken = await this.signAuthToken(id, email);
             console.log(signedAuthToken);
             this.db.storeUserAuthToken(id, signedAuthToken);
-            // todo config the cookies properly
             response.cookie('auth_token', signedAuthToken, { 
-                // domain: 'kind-elk-sheath-dress.cyclic.app',
                 maxAge: 1000 * 60 * 5,
                 sameSite: 'None',
                 secure: true
@@ -69,19 +67,25 @@ export class AuthService {
             const { id, email } = user;
             const signedAuthToken = await this.signAuthToken(id, email);
             console.log('aaaiicii', signedAuthToken);
-            this.db.storeUserAuthToken(id, signedAuthToken);
-            response.cookie('auth_token', signedAuthToken) // to do add expiration date
 
-            response.send({
+            this.db.storeUserAuthToken(id, signedAuthToken);
+            
+            response.cookie('auth_token', signedAuthToken, { 
+                maxAge: 1000 * 60 * 5,
+                sameSite: 'None',
+                secure: true
+            });
+
+            return {
                 email: user.email,
                 id: user.id,
                 role: user.role
-            })
+            }
 
         } catch (err) {
             console.log('asta e eroarea',err)
             response.status(401);
-            response.send(err.response);
+            return err.response;
         }
     }
 

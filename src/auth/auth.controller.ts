@@ -18,9 +18,9 @@ export class AuthController {
     
     @UseGuards(AuthGuard)
     @Get('refresh')
-    refreshAuth(@Req() requestWithAuth, @Res() response: Response) {
+    refreshAuth(@Req() requestWithAuth, @Res({ passthrough: true }) response: Response) {
         const userId = requestWithAuth.user.id;
-        this.authService.refreshAuth(userId, response)
+        return this.authService.refreshAuth(userId, response)
     }
 
     @Get()
