@@ -31,15 +31,15 @@ export class FirebaseService {
         return userRef.docs[0].data();
     }
 
-    async getAllUsers() {
-        console.log("getting all users");
-        const collectionRef = this.db.collection('users');
-        const snapshot = await collectionRef.get();
-        snapshot.forEach(doc => {
-            const data = doc.data();
-            console.log('Document ID:', doc.id, 'Data:', data);
-        })
-    }
+    // async getAllUsers() {
+    //     console.log("getting all users");
+    //     const collectionRef = this.db.collection('users');
+    //     const snapshot = await collectionRef.get();
+    //     snapshot.forEach(doc => {
+    //         const data = doc.data();
+    //         console.log('Document ID:', doc.id, 'Data:', data);
+    //     })
+    // }
 
     async createUser(userDetails, encryptedPassword) {
         const { email } = userDetails;

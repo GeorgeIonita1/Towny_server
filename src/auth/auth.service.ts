@@ -40,13 +40,19 @@ export class AuthService {
             const signedAuthToken = await this.signAuthToken(id, email);
             console.log(signedAuthToken);
             this.db.storeUserAuthToken(id, signedAuthToken);
-            response.cookie('auth_token', signedAuthToken);
+            // todo config the cookies properly
+            response.cookie('auth_token', signedAuthToken, { 
+                // domain: 'kind-elk-sheath-dress.cyclic.app',
+                maxAge: 1000 * 60 * 5,
+                sameSite: false
+            });
 
             return {
                 email: user.email,
                 id: user.id,
                 role: user.role
             }
+            
         } catch(err) {
             response.status(403);
             return err.response;
