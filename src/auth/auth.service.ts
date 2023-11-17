@@ -44,7 +44,7 @@ export class AuthService {
             response.cookie('auth_token', signedAuthToken, { 
                 // domain: 'kind-elk-sheath-dress.cyclic.app',
                 maxAge: 1000 * 60 * 5,
-                sameSite: false
+                sameSite: 'None'
             });
 
             return {
