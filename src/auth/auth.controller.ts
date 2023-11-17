@@ -12,8 +12,8 @@ export class AuthController {
     
     @UseFilters(HttpExceptionFilter) // can i remove the filter?
     @Post('signin')
-    signIn(@Body() signInDto: SignInDto, @Res() response: Response) {
-        this.authService.signIn(signInDto.email, signInDto.password, response);
+    signIn(@Body() signInDto: SignInDto, @Res({ passthrough: true }) response: Response) {
+        return this.authService.signIn(signInDto.email, signInDto.password, response);
     }
     
     @UseGuards(AuthGuard)
@@ -24,7 +24,7 @@ export class AuthController {
     }
 
     @Get()
-    test() {
-        return 'I am grootss2'
+    test(@Res({ passthrough: true }) response: Response) {
+        return 'Ggggg'
     }
 }

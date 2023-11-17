@@ -30,6 +30,7 @@ export class UsersService {
   }
 
   async createUser(userDetails) {
+    // to do: maybe check if user already exists before cripting password
     console.log(userDetails);
     const encryptedPassword = await bcrypt.hashSync(userDetails.password, 10);
     console.log(encryptedPassword)

@@ -18,7 +18,7 @@ export class AuthGuard implements CanActivate {
         
         try {
             if (!authToken) throw new UnauthorizedException();
-
+            
             const token = await this.jwtService.verifyAsync(authToken, {
                 secret: this.configService.get('JWT_SECRET')
             });
@@ -35,7 +35,7 @@ export class AuthGuard implements CanActivate {
             return true;
 
         } catch(err) {
-            console.log('redirrect to login page');
+            console.log('redirrect to login page', err);
             return false;
         }
     }
