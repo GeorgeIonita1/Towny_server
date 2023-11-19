@@ -70,6 +70,7 @@ export class AuthService {
 
             this.db.storeUserAuthToken(id, signedAuthToken);
             
+            response.setHeader('Access-Control-Allow-Origin', '*');
             response.cookie('auth_token', signedAuthToken, { 
                 maxAge: 1000 * 60 * 5,
                 sameSite: 'None',
